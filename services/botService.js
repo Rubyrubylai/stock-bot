@@ -1,7 +1,7 @@
 const linebot = require('linebot')
 const { Op } = require('sequelize')
 const db = require('../models')
-const Stock = db.Stock
+const Technical = db.Technical
 
 module.exports = () => {
   const bot = linebot({
@@ -12,10 +12,10 @@ module.exports = () => {
   
   const linebotParser = bot.parser()
   
-  bot.on('message', async (event) => {
+  bot.on('message', async(event) => {
     try {
       let text
-      let result = await Stock.findAll({
+      let result = await Technical.findAll({
         raw: true,
         nest: true,
         where: {
@@ -49,7 +49,30 @@ module.exports = () => {
         收盤價: ${result[0].closePrice} (${result[0].trend}${result[0].difference}, ${percentageChange})`
       }
       else if (result.length === 0) {
-        text = '沒有符合的條件，請重新搜尋'
+        event.reply('123')
+        event.reply({
+          type: 'template',
+          altText: 'this is a buttons template',
+          template: {
+            type: 'buttons',
+            thumbnailImageUrl: 'https://example.com/bot/images/image.jpg',
+            title: 'Menu',
+            text: 'Please select',
+            actions: [{
+              type: 'message',
+              label: '三大法人',
+              text: 'I',
+            }, {
+              type: 'message',
+              label:"按鈕顯示的文字",
+              text: 'Add to cart'
+            }, {
+              type: 'uri',
+              label: 'View detail',
+              uri: 'http://example.com/page/123'
+            }]
+          }
+        });
       }
       else {
         text = '請輸入您要搜尋的股票: '
@@ -57,7 +80,18 @@ module.exports = () => {
           text += `${r.name}, `
         }
       }
-      event.reply(text)
+      return event.reply(text)
+    }
+    catch (err) {
+      console.log(err.message)
+    }
+  })
+
+  bot.on('postback', async(event) => {
+    try {
+      console.log('---postback')
+      console.log(event)
+      event.reply('你好')
     }
     catch (err) {
       console.log(err.message)
@@ -66,3 +100,5 @@ module.exports = () => {
 
   return linebotParser
 }
+
+
