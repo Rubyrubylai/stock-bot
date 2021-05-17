@@ -32,10 +32,10 @@ module.exports = () => {
         let percentageChange
         switch (result[0].trend) {
           case '-':
-            percentageChange = `${((result[0].difference/(result[0].openPrice+result[0].difference))*100).toFixed(2)}%`
+            percentageChange = `${((result[0].difference/(result[0].openPrice + result[0].difference))*100).toFixed(2)}%`
             break
           case '+':
-            percentageChange = `${((result[0].difference/(result[0].closePrice-result[0].difference))*100).toFixed(2)}%`
+            percentageChange = `${((result[0].difference/(result[0].closePrice - result[0].difference))*100).toFixed(2)}%`
             break
           default:
             '0.00%'
@@ -46,10 +46,7 @@ module.exports = () => {
         開盤價: ${result[0].openPrice}
         最高價: ${result[0].highestPrice}
         最低價: ${result[0].lowestPrice}
-        收盤價: ${result[0].closePrice}
-        價差: ${result[0].trend}${result[0].difference}
-        本益比: ${result[0].PER}
-        漲跌百分比: ${percentageChange}`
+        收盤價: ${result[0].closePrice} (${result[0].trend}${result[0].difference}, ${percentageChange})`
       }
       else if (result.length === 0) {
         text = '沒有符合的條件，請重新搜尋'
