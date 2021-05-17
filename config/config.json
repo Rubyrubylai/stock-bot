@@ -1,7 +1,7 @@
 {
   "development": {
     "username": "root",
-    "password": "password",
+    "password": "Glacier2021",
     "database": "stock_bot",
     "host": "127.0.0.1",
     "dialect": "mysql"

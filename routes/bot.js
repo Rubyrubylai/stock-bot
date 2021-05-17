@@ -11,7 +11,7 @@ router.get('/', async (req, res) =>　{
   try {
     let response = await axios({
       method: 'GET',
-      url: 'https://www.twse.com.tw/exchangeReport/MI_INDEX?response=html&date=20210507&type=ALLBUT0999'
+      url: 'https://www.twse.com.tw/exchangeReport/MI_INDEX?response=html&date=20210514&type=ALLBUT0999'
     })
     const $ = cheerio.load(response.data)
     const table = $('table:nth-child(11) tbody tr')

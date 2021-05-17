@@ -12,7 +12,7 @@ module.exports = () => {
   
   const linebotParser = bot.parser()
   
-  bot.on('message', async (event) => {
+  bot.on('message', async(event) => {
     try {
       let text
       let result = await Stock.findAll({
@@ -46,13 +46,32 @@ module.exports = () => {
         開盤價: ${result[0].openPrice}
         最高價: ${result[0].highestPrice}
         最低價: ${result[0].lowestPrice}
-        收盤價: ${result[0].closePrice}
-        價差: ${result[0].trend}${result[0].difference}
-        本益比: ${result[0].PER}
-        漲跌百分比: ${percentageChange}`
+        收盤價: ${result[0].closePrice} (${result[0].trend}${result[0].difference}, ${percentageChange})`
       }
       else if (result.length === 0) {
-        text = '沒有符合的條件，請重新搜尋'
+        return event.reply({
+          type: 'template',
+          altText: 'this is a buttons template',
+          template: {
+            type: 'buttons',
+            thumbnailImageUrl: 'https://example.com/bot/images/image.jpg',
+            title: 'Menu',
+            text: 'Please select',
+            actions: [{
+              type: 'postback',
+              label: 'Buy',
+              data: 'action=buy&itemid=123'
+            }, {
+              type: 'postback',
+              label: 'Add to cart',
+              data: 'action=add&itemid=123'
+            }, {
+              type: 'uri',
+              label: 'View detail',
+              uri: 'http://example.com/page/123'
+            }]
+          }
+        });
       }
       else {
         text = '請輸入您要搜尋的股票: '
@@ -60,7 +79,18 @@ module.exports = () => {
           text += `${r.name}, `
         }
       }
-      event.reply(text)
+      return event.reply(text)
+    }
+    catch (err) {
+      console.log(err.message)
+    }
+  })
+
+  bot.on('postback', async(event) => {
+    try {
+      console.log('---postback')
+      console.log(event)
+      event.reply('你好')
     }
     catch (err) {
       console.log(err.message)
@@ -69,3 +99,5 @@ module.exports = () => {
 
   return linebotParser
 }
+
+
