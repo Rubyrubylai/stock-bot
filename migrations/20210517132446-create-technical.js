@@ -15,31 +15,31 @@ module.exports = {
         type: Sequelize.STRING
       },
       transactionNumber: {
-        type: Sequelize.STRING
+        type: Sequelize.INTEGER.UNSIGNED
       },
       openPrice: {
-        type: Sequelize.INTEGER
+        type: Sequelize.FLOAT
       },
       highPrice: {
-        type: Sequelize.INTEGER
+        type: Sequelize.FLOAT
       },
       lowPrice: {
-        type: Sequelize.INTEGER
+        type: Sequelize.FLOAT
       },
       closePrice: {
-        type: Sequelize.INTEGER
+        type: Sequelize.FLOAT
       },
       trend: {
         type: Sequelize.STRING
       },
       difference: {
-        type: Sequelize.INTEGER
+        type: Sequelize.FLOAT
       },
       PER: {
-        type: Sequelize.INTEGER
+        type: Sequelize.FLOAT
       },
       dividendYield: {
-        type: Sequelize.INTEGER
+        type: Sequelize.FLOAT
       },
       createdAt: {
         allowNull: false,

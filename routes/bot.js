@@ -1,12 +1,13 @@
 const express = require('express')
 const router = express.Router()
 const cheerio = require('cheerio')
-const axios = require('axios')
 const moment = require('moment')
 const botService = require('../services/botService')
 const linebotParser = botService()
 const db = require('../models')
-const { Technical, Investor, Securities } = db
+const { Technical, Investor, Security, Basic } = db
+const { stringToNumber, stringToNumberDivide } = require('../config/convert')
+const { taiwanStockRequest, goodInfoRequest } = require('../config/axios')
 
 router.get('/technical', async (req, res) =>　{
   try {
@@ -15,15 +16,12 @@ router.get('/technical', async (req, res) =>　{
       truncate: true
     })
 
-    const now = moment('2021-05-14').format('YYYYMMDD')
-    console.log(now)
-    let response = await axios({
-      method: 'GET',
-      url: `https://www.twse.com.tw/exchangeReport/MI_INDEX?response=html&date=${now}&type=ALLBUT0999`
-    })
+    const now = moment('2021-05-17').format('YYYYMMDD')
+    
+    let response = await taiwanStockRequest.get(`/exchangeReport/MI_INDEX?response=html&date=${now}&type=ALLBUT0999`)
     let $ = cheerio.load(response.data)
     const table = $('table:nth-child(11) tbody tr')
-    for (let i=1; i<table.length; i++) {
+    for (let i=0; i<table.length; i++) {
       const table_td = table.eq(i).find('td')
       const code = table_td.eq(0).text()
       const name = table_td.eq(1).text()
@@ -39,34 +37,30 @@ router.get('/technical', async (req, res) =>　{
       await Technical.create({
         code: code,
         name: name,
-        transactionNumber: transactionNumber,
+        transactionNumber: stringToNumber(transactionNumber),
         transactionAmount: transactionAmount,
-        openPrice: Number(openPrice),
-        highPrice: Number(highPrice),
-        lowPrice: Number(lowPrice),
-        closePrice: Number(closePrice),
+        openPrice: Number(openPrice) || null,
+        highPrice: Number(highPrice) || null,
+        lowPrice: Number(lowPrice) || null,
+        closePrice: Number(closePrice) || null,
         trend: trend,
-        difference: Number(difference),
-        PER: Number(PER)
+        difference: Number(difference) || null,
+        PER: Number(PER) || null
       })
     }
 
-    let responseYield = await axios({
-      method: 'GET',
-      url: `https://www.twse.com.tw/exchangeReport/BWIBBU_d?response=html&date=${now}&selectType=ALL`
-    })
-    $ = cheerio.load(responseYield.data)
-    const tableYield = $('table')
-    for (let i=1; i<tableYield.length; i++) {
-      const table_tr = tableYield.eq(i).find('tR')
-      const code = table_tr.eq(0).text()
-      const dividendYield = table_tr.eq(2).text()
-      await Technical.findOne({
-        dividendYield: dividendYield,
-        where: {
-          code: code
-        }
-      })
+    //殖利率
+    let responseYield = await taiwanStockRequest.get(`/exchangeReport/BWIBBU_d?response=html&date=${now}&selectType=ALL`)
+    let $Y = cheerio.load(responseYield.data)
+    const tableYield = $Y('table tbody tr')
+    for (let i=0; i<tableYield.length; i++) {
+      const table_td = tableYield.eq(i).find('td')
+      const code = table_td.eq(0).text()
+      const dividendYield = table_td.eq(2).text()
+      await Technical.update(
+        { dividendYield: Number(dividendYield) || null },
+        { where: { code: code } }
+      )
     }
     return res.send('成功')
   }
@@ -82,28 +76,30 @@ router.get('/investor', async (req, res) =>　{
       truncate: true
     })
 
-    const now = moment('2021-05-14').format('YYYYMMDD')
-    let response = await axios({
-      method: 'GET',
-      url: `https://www.twse.com.tw/fund/T86?response=html&date=${now}&selectType=ALLBUT0999`
-    })
+    //三大法人
+    const now = moment('2021-05-17').format('YYYYMMDD')
+    let response = await taiwanStockRequest.get(`/fund/T86?response=html&date=${now}&selectType=ALLBUT0999`)
     const $ = cheerio.load(response.data)
-    const table = $('tbody')
-    for (let i=1; i<table.length; i++) {
-      const table_tr = table.eq(i).find('tr')
-      const foreignBuyNumber = table_tr.eq(2).text()
-      const foreignSellNumber = table_tr.eq(3).text()
-      const investmentBuyNumber = table_tr.eq(8).text()
-      const investmentSellNumber = table_tr.eq(9).text()
-      const dealerBuyNumber = table_tr.eq(12).text()
-      const dealerSellNumber = table_tr.eq(13).text()
+    const table = $('table tbody tr')
+    for (let i=0; i<table.length; i++) {
+      const table_td = table.eq(i).find('td')
+      const code = table_td.eq(0).text()
+      const name = table_td.eq(1).text()
+      const foreignBuyNumber = table_td.eq(2).text()
+      const foreignSellNumber = table_td.eq(3).text()
+      const investmentBuyNumber = table_td.eq(8).text()
+      const investmentSellNumber = table_td.eq(9).text()
+      const dealerBuyNumber = table_td.eq(12).text()
+      const dealerSellNumber = table_td.eq(13).text()
       await Investor.create({
-        foreignBuyNumber: Number(foreignBuyNumber),
-        foreignSellNumber: Number(foreignSellNumber),
-        investmentBuyNumber: Number(investmentBuyNumber),
-        investmentSellNumber: Number(investmentSellNumber),
-        dealerBuyNumber: Number(dealerBuyNumber),
-        dealerSellNumber: Number(dealerSellNumber),
+        code: code,
+        name: name,
+        foreignBuyNumber: stringToNumberDivide(foreignBuyNumber),
+        foreignSellNumber: stringToNumberDivide(foreignSellNumber),
+        investmentBuyNumber: stringToNumberDivide(investmentBuyNumber),
+        investmentSellNumber: stringToNumberDivide(investmentSellNumber),
+        dealerBuyNumber: stringToNumberDivide(dealerBuyNumber),
+        dealerSellNumber: stringToNumberDivide(dealerSellNumber),
       })
     }
     return res.send('成功')
@@ -113,43 +109,110 @@ router.get('/investor', async (req, res) =>　{
   }
 })
 
-router.get('/securities', async (req, res) =>　{
+router.get('/security', async (req, res) =>　{
   try {
-    Securities.destroy({
+    Security.destroy({
       where: {},
       truncate: true
     })
 
-    const now = moment('2021-05-14').format('YYYYMMDD')
-    let response = await axios({
-      method: 'GET',
-      url: `https://www.twse.com.tw/exchangeReport/MI_INDEX?response=html&date=${now}&type=ALLBUT0999`
-    })
+    //融資、融券
+    const now = moment('2021-05-17').format('YYYYMMDD')
+    let response = await taiwanStockRequest.get(`/exchangeReport/MI_MARGN?response=html&date=20210517&selectType=STOCK`)
     const $ = cheerio.load(response.data)
-    const table = $('table:nth-child(11) tbody tr')
+    const table = $('table tbody tr')
     for (let i=1; i<table.length; i++) {
       const table_td = table.eq(i).find('td')
-      const marginYesterdayNumber = table_tr.eq(0).text()
-      const marginTodayNumber = table_tr.eq(1).text()
-      const shortSaleYesterdayNumber= table_tr.eq(3).text()
-      const shortSaleTodayNumber = table_tr.eq(4).text()
-      const loanYesterdayNumber = table_tr.eq(5).text()
-      const loanTodayNumber = table_tr.eq(6).text()
-      const offsetNumber = table_tr.eq(7).text()
-      // await Technical.create({
-      //   code: code,
-      //   name: name,
-      //   transactionNumber: transactionNumber,
-      //   transactionAmount: transactionAmount,
-      //   openPrice: Number(openPrice),
-      //   highPrice: Number(highestPrice),
-      //   lowPrice: Number(lowestPrice),
-      //   closePrice: Number(closePrice),
-      //   trend: trend,
-      //   difference: Number(difference),
-      //   PER: Number(PER)
-      // })
+      const code = table_td.eq(0).text()
+      const name = table_td.eq(1).text()
+      const marginYesterdayNumber = table_td.eq(5).text()
+      const marginTodayNumber = table_td.eq(6).text()
+      const shortSaleYesterdayNumber = table_td.eq(11).text()
+      const shortSaleTodayNumber = table_td.eq(12).text()
+      await Security.create({
+        code: code,
+        name: name,
+        marginYesterdayNumber: stringToNumber(marginYesterdayNumber),
+        marginTodayNumber: stringToNumber(marginTodayNumber),
+        shortSaleYesterdayNumber: stringToNumber(shortSaleYesterdayNumber),
+        shortSaleTodayNumber: stringToNumber(shortSaleTodayNumber),
+      })
     }
+
+    //借券賣
+    let responseLoan = await taiwanStockRequest.get(`/exchangeReport/TWT93U?response=html&date=${now}`)
+    let $L = cheerio.load(responseLoan.data)
+    const tableLoan = $L('table tbody tr')
+    for (let i=0; i<tableLoan.length-1; i++) {
+      const table_td = tableLoan.eq(i).find('td')
+      const code = table_td.eq(0).text()
+      const name = table_td.eq(1).text()
+      const loanYesterdayNumber = table_td.eq(8).text()
+      const loanTodayNumber = table_td.eq(12).text()
+      let security = await Security.update(
+        {
+          loanYesterdayNumber: stringToNumber(loanYesterdayNumber),
+          loanTodayNumber: stringToNumber(loanTodayNumber)
+        },
+        { where: { code: code } }
+      )
+      if (security[0] === 0) {
+        await Security.create({
+          code: code,
+          name: name,
+          loanYesterdayNumber: stringToNumber(loanYesterdayNumber),
+          loanTodayNumber: stringToNumber(loanTodayNumber)
+        })
+      }
+    }
+
+    //當沖
+    let responseOffset = await taiwanStockRequest.get(`/exchangeReport/TWTB4U?response=html&date=${now}&selectType=All`)
+    let $O = cheerio.load(responseOffset.data)
+    const tableOffset = $O('table:nth-child(3) tbody tr')
+    for (let i=0; i<tableOffset.length; i++) {
+      const table_td = tableOffset.eq(i).find('td')
+      const code = table_td.eq(0).text()
+      const name = table_td.eq(1).text()
+      const offsetNumber = table_td.eq(3).text()
+      let security = await Security.update(
+        { offsetNumber: stringToNumber(offsetNumber) },
+        { where: { code: code } }
+      )
+      if (security[0] === 0) {
+        await Security.create({
+          code: code,
+          name: name,
+          offsetNumber: stringToNumber(offsetNumber)
+        })
+      }
+    }
+
+    return res.send('成功')
+  }
+  catch (err) {
+    console.error(err)
+  }
+})
+
+router.get('/basic', async (req, res) => {
+  try {
+    const stockId = 2330
+    let response = await goodInfoRequest.get(`/StockInfo/BasicInfo.asp?STOCK_ID=${stockId}`)
+    let $ = cheerio.load(response.data)
+    const table = $('table:nth-child(5) tr td:nth-child(3) table:nth-child(3) tr')
+    const code = table.eq(1).find('td:nth-child(2)').text()
+    const name = table.eq(1).find('td:nth-child(4)').text()
+    const industry = table.eq(2).find('td:nth-child(2)').text()
+    const listedCompany = table.eq(2).find('td:nth-child(4)').text()
+    const capital = table.eq(7).find('td:nth-child(2)').text()
+    await Basic.create({
+      code: code,
+      name: name,
+      industry: industry,
+      listedCompany: listedCompany,
+      capital: capital
+    })
     return res.send('成功')
   }
   catch (err) {

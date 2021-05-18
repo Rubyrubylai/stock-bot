@@ -14,9 +14,11 @@ module.exports = (sequelize, DataTypes) => {
     }
   };
   Basic.init({
+    code: DataTypes.STRING,
+    name: DataTypes.STRING,
     industry: DataTypes.STRING,
-    listedCpmany: DataTypes.STRING,
-    capitial: DataTypes.STRING
+    listedCompany: DataTypes.STRING,
+    capital: DataTypes.STRING
   }, {
     sequelize,
     modelName: 'Basic',

@@ -14,6 +14,8 @@ module.exports = (sequelize, DataTypes) => {
     }
   };
   Investor.init({
+    code: DataTypes.STRING,
+    name: DataTypes.STRING,
     foreignBuyNumber: DataTypes.INTEGER,
     foreignSellNumber: DataTypes.INTEGER,
     foreignDifferenceNumber: DataTypes.INTEGER,

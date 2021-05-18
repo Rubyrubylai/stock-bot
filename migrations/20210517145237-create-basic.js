@@ -8,13 +8,19 @@ module.exports = {
         primaryKey: true,
         type: Sequelize.INTEGER
       },
+      code: {
+        type: Sequelize.STRING
+      },
+      name: {
+        type: Sequelize.STRING
+      },
       industry: {
         type: Sequelize.STRING
       },
-      listedCpmany: {
+      listedCompany: {
         type: Sequelize.STRING
       },
-      capitial: {
+      capital: {
         type: Sequelize.STRING
       },
       createdAt: {
