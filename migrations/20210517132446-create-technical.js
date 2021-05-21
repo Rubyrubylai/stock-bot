@@ -29,14 +29,11 @@ module.exports = {
       closePrice: {
         type: Sequelize.FLOAT
       },
-      trend: {
-        type: Sequelize.STRING
-      },
       difference: {
         type: Sequelize.FLOAT
       },
       PER: {
-        type: Sequelize.FLOAT
+        type: Sequelize.DECIMAL
       },
       dividendYield: {
         type: Sequelize.FLOAT

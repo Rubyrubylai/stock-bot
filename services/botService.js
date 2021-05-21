@@ -2,6 +2,8 @@ const linebot = require('linebot')
 const { Op } = require('sequelize')
 const db = require('../models')
 const { Technical, Investor, Security, Basic } = db
+const { difference, toLocaleString } = require('../config/convert')
+const stockService = require('./stockService')
 
 module.exports = () => {
   const bot = linebot({
@@ -37,10 +39,10 @@ module.exports = () => {
             template: {
               type: 'buttons',
               title: '選單',
-              text: '請選擇您要觀看的項目',
+              text: '請選擇您要查看的項目',
               actions: [{
                 type: 'message',
-                label: '技術面',
+                label: '今日股價',
                 text: `T${code}`,
               }, {
                 type: 'message',
@@ -67,50 +69,97 @@ module.exports = () => {
                     code: codeT
                 } 
               })
-              result = result.toJSON()
-              let percentageChange
-              switch (result.trend) {
-                case '-':
-                  percentageChange = `${Math.round((result.difference/(result.openPrice + result.difference))*100)/100}%`
-                  break
-                case '+':
-                  percentageChange = `${Math.round((result.difference/(result.closePrice - result.difference))*100)/100}%`
-                  break
-                default:
-                  '0.00%'
+              if (!result) { text = '找不到符合的條件，請重新輸入' }
+              else {
+                const percentageChange = result.difference ? `${Math.round((result.difference/(result.openPrice + result.difference))*100)/100}%` : (result.difference === 0 ? '0.00%' : '--')
+                text = 
+                `${result.code} ${result.name}` + '\n' +
+                `成交筆數: ${toLocaleString(result.transactionNumber)}` + '\n' +
+                `開盤價: ${toLocaleString(result.openPrice)}` + '\n' +
+                `最高價: ${toLocaleString(result.highPrice)}` + '\n' +
+                `最低價: ${toLocaleString(result.lowPrice)}` + '\n' +
+                `收盤價: ${toLocaleString(result.closePrice)} (${result.difference}, ${percentageChange})`
               }
-              text = 
-              `${result.code} ${result.name}
-              成交筆數: ${result.transactionNumber}
-              開盤價: ${result.openPrice}
-              最高價: ${result.highPrice}
-              最低價: ${result.lowPrice}
-              收盤價: ${result.closePrice} (${result.trend}${result.difference}, ${result.trend}${percentageChange})`
               break
             case 'I':
               const codeI = event.message.text.substr(1)
-              result = await Investor.findAll({
+              result = await Investor.findOne({
                 where: {
                   code: codeI
                 }
               })
-              result = result.toJSON()
-              const foreignDifferenceNumber = result.foreignBuyNumber - result.foreignSellNumber
-              const investmentDifferenceNumber = result.investmentBuyNumber - result.investmentSellNumber
-              const dealerDifferenceNumber = result.dealerBuyNumber - result.dealerSellNumber
-              text = 
-              `${result.code} ${result.name}
-              外資買入張數: ${result.foreignBuyNumber}
-              外資賣出張數: ${result.foreignSellNumber}
-              外資買賣超: ${foreignDifferenceNumber}
-              ----------------
-              投信買入張數: ${result.investmentBuyNumber}
-              投信賣出張數: ${result.investmentSellNumber}
-              投信買賣超: ${investmentDifferenceNumber}
-              ----------------
-              自營商買數張數: ${result.dealerBuyNumber}
-              自營商賣出張數: ${result.dealerSellNumber}
-              自營商買賣超: ${dealerDifferenceNumber}`
+              if (!result) { text = '找不到符合的條件，請重新輸入' }
+              else {
+                const foreignDifferenceNumber = difference(result.foreignBuyNumber - result.foreignSellNumber)
+                const investmentDifferenceNumber = difference(result.investmentBuyNumber - result.investmentSellNumber)
+                const dealerDifferenceNumber = difference(result.dealerBuyNumber - result.dealerSellNumber)
+                text = 
+                `${result.code} ${result.name}` + '\n' +
+                `外資買入張數: ${toLocaleString(result.foreignBuyNumber)}` + '\n' +
+                `外資賣出張數: ${toLocaleString(result.foreignSellNumber)}` + '\n' +
+                `外資買賣超: ${foreignDifferenceNumber}` + '\n' +
+                '----------------' + '\n' +
+                `投信買入張數: ${toLocaleString(result.investmentBuyNumber)}` + '\n' +
+                `投信賣出張數: ${toLocaleString(result.investmentSellNumber)}` + '\n' +
+                `投信買賣超: ${investmentDifferenceNumber}` + '\n' +
+                '----------------' + '\n' +
+                `自營商買數張數: ${toLocaleString(result.dealerBuyNumber)}` + '\n' +
+                `自營商賣出張數: ${toLocaleString(result.dealerSellNumber)}` + '\n' +
+                `自營商買賣超: ${dealerDifferenceNumber}`
+              }
+              break
+            case 'S':
+              const codeS = event.message.text.substr(1)
+              result = await Security.findOne({
+                where: {
+                  code: codeS
+                }
+              })
+              if (!result) { text = '找不到符合的條件，請重新輸入'}
+              else {
+                const marginDifferenceNumber = difference(result.marginTodayNumber - result.marginYesterdayNumber)
+                const shortSaleDifferenceNumber = difference(result.shortSaleTodayNumber - result.shortSaleYesterdayNumber)
+                const loanDifferenceNumber = difference(result.loanTodayNumber - result.loanYesterdayNumber)
+                text = 
+                `${result.code} ${result.name}` + '\n' +
+                `融資: ${marginDifferenceNumber}` + '\n' +
+                `融券: ${shortSaleDifferenceNumber}` + '\n' +
+                `借券: ${loanDifferenceNumber}` + '\n' +
+                `當沖: ${difference(result.offsetNumber)}`
+              }
+              break
+            case 'B':
+              const codeB = event.message.text.substr(1)
+              result = await Basic.findOne({
+                where: { code: codeB },
+                include: {
+                  model: Technical
+                }
+              })
+              if (result) {
+                result = result.toJSON()
+                text = 
+                `${result.code} ${result.Technical.name}` + '\n' +
+                `產業別: ${result.industry}, ${result.listedCompany}` + '\n' +
+                `資本額: ${result.capital}` + '\n' +
+                `本益比: ${result.Technical.PER}` + '\n' +
+                `殖利率: ${result.Technical.dividendYield ? result.Technical.dividendYield+'%' : '--'}`
+              }
+              else {
+                let response = await stockService.createBasic(codeB)
+                if (response.message) { text = response.message }
+                else {
+                  result = await Technical.findOne({
+                    where: { code: codeB }
+                  })
+                  text = 
+                  `${response.code} ${result.name}` + '\n' +
+                  `產業別: ${response.industry}, ${response.listedCompany}` + '\n' +
+                  `資本額: ${response.capital}` + '\n' +
+                  `本益比: ${result.PER}` + '\n' +
+                  `殖利率: ${result.dividendYield ? result.dividendYield+'%' : '--'}`
+                }
+              }
               break
             default:
               text = '找不到符合的條件，請重新輸入'

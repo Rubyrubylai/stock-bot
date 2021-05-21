@@ -18,13 +18,10 @@ module.exports = (sequelize, DataTypes) => {
     name: DataTypes.STRING,
     foreignBuyNumber: DataTypes.INTEGER,
     foreignSellNumber: DataTypes.INTEGER,
-    foreignDifferenceNumber: DataTypes.INTEGER,
     investmentBuyNumber: DataTypes.INTEGER,
     investmentSellNumber: DataTypes.INTEGER,
-    investmentDifferenceNumber: DataTypes.INTEGER,
     dealerBuyNumber: DataTypes.INTEGER,
-    dealerSellNumber: DataTypes.INTEGER,
-    dealerDifferenceNumber: DataTypes.INTEGER
+    dealerSellNumber: DataTypes.INTEGER
   }, {
     sequelize,
     modelName: 'Investor',

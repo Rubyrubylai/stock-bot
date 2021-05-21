@@ -21,10 +21,9 @@ module.exports = (sequelize, DataTypes) => {
     highPrice: DataTypes.INTEGER,
     lowPrice: DataTypes.INTEGER,
     closePrice: DataTypes.INTEGER,
-    trend: DataTypes.STRING,
     difference: DataTypes.INTEGER,
-    PER: DataTypes.INTEGER,
-    dividendYield: DataTypes.INTEGER
+    PER: DataTypes.DECIMAL,
+    dividendYield: DataTypes.FLOAT
   }, {
     sequelize,
     modelName: 'Technical',
