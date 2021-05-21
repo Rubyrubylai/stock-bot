@@ -34,29 +34,86 @@ module.exports = () => {
         case 1:
           const code = result[0].code
           text = {
-            type: 'template',
-            altText: 'this is a buttons template',
-            template: {
-              type: 'buttons',
-              title: '選單',
-              text: '請選擇您要查看的項目',
-              actions: [{
-                type: 'message',
-                label: '今日股價',
-                text: `T${code}`,
-              }, {
-                type: 'message',
-                label: '三大法人',
-                text: `I${code}`,
-              }, {
-                type: 'message',
-                label: '融資、融券、借券賣、當沖',
-                text: `S${code}`
-              }, {
-                type: 'message',
-                label: '基本面',
-                text: `B${code}`
-              }]
+            type: 'flex',
+            altText: '股票選單',
+            contents: {
+              type: 'bubble',
+              body: {
+                type: 'box',
+                layout: 'vertical',
+                contents: [
+                  {
+                    type: 'text',
+                    text: '選單',
+                    weight: 'bold',
+                    size: 'xl',
+                    margin: 'md'
+                  },
+                  {
+                    type: 'text',
+                    text: '請選擇您要查看的項目',
+                    margin: 'md'
+                  },
+                  {
+                    type: 'spacer'
+                  }
+                ]
+              },
+              footer: {
+                type: 'box',
+                layout: 'vertical',
+                contents: [
+                  {
+                    type: 'button',
+                    action: {
+                      type: 'message',
+                      label: '今日股價',
+                      text: `T${code}`
+                    },
+                    height: 'sm'
+                  },
+                  {
+                    type: 'button',
+                    action: {
+                      type: 'message',
+                      label: '三大法人',
+                      text: `I${code}`,
+                    },
+                    height: 'sm'
+                  },
+                  {
+                    type: 'button',
+                    action: {
+                      type: 'message',
+                      label: '融資、融券、借券賣、當沖',
+                      text: `S${code}`
+                    },
+                    height: 'sm'
+                  },
+                  {
+                    type: 'button',
+                    action: {
+                      type: 'message',
+                      label: '基本面',
+                      text: `B${code}`
+                    }
+                  },{
+                    type: 'button',
+                    action: {
+                      type: 'uri',
+                      label: '追蹤',
+                      uri: `https://liff.line.me/1656012903-kmXAo1L4/${code}`
+                    },
+                    height: 'sm'
+                  }
+                ],
+                flex: 0
+              },
+              styles: {
+                footer: {
+                  separator: true
+                }
+              }
             }
           }
           break
