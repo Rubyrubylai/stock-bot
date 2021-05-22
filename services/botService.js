@@ -4,6 +4,9 @@ const db = require('../models')
 const { Technical, Investor, Security, Basic } = db
 const { difference, toLocaleString } = require('../config/convert')
 const stockService = require('./stockService')
+if (process.env.NODE_ENV !== 'production') {
+  require('dotenv').config()
+}
 
 module.exports = () => {
   const bot = linebot({
@@ -33,6 +36,7 @@ module.exports = () => {
       switch (result.length) {
         case 1:
           const code = result[0].code
+          const name = encodeURI(result[0].name)
           text = {
             type: 'flex',
             altText: '股票選單',
@@ -102,7 +106,7 @@ module.exports = () => {
                     action: {
                       type: 'uri',
                       label: '追蹤',
-                      uri: `https://liff.line.me/1656012903-kmXAo1L4/${code}`
+                      uri: `https://liff.line.me/${process.env.liffId}?code=${code}&name=${name}`
                     },
                     height: 'sm'
                   }

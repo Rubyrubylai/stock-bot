@@ -1,4 +1,48 @@
-h5 {
+.container {
   margin-top: 30px;
+}
+
+h5 {
   margin-bottom: 20px;
 }
+
+.form-group, li {
+  margin-bottom: 10px;
+}
+
+.btn {
+  margin-top: 20px;
+  position: absolute;
+  left: 30%;
+}
+
+a {
+  text-decoration:none;
+  color: black;
+  margin-left: 7px;
+}
+
+a:hover {
+  color: black;
+}
+
+#unfollow {
+  border-color: none;
+  border-style: none;
+  background-color: white;
+}
+
+.cancel-btn {
+  position: absolute;
+  left: 60%;
+}
+
+.confirm-btn {
+  position: absolute;
+  left: 80%;
+}
+
+.modal-footer {
+  height: 70px;
+}
+
