@@ -1,7 +1,7 @@
 const linebot = require('linebot')
 const { Op } = require('sequelize')
 const db = require('../models')
-const { Technical, Investor, Security, Basic } = db
+const { Technical, Investor, Security, Basic, User } = db
 const { difference, toLocaleString } = require('../config/convert')
 const stockService = require('./stockService')
 if (process.env.NODE_ENV !== 'production') {
@@ -36,6 +36,7 @@ module.exports = () => {
       switch (result.length) {
         case 1:
           const code = result[0].code
+          const userId = event.source.userId
           const name = encodeURI(result[0].name)
           text = {
             type: 'flex',
@@ -106,7 +107,7 @@ module.exports = () => {
                     action: {
                       type: 'uri',
                       label: '追蹤',
-                      uri: `https://liff.line.me/${process.env.liffId}?code=${code}&name=${name}`
+                      uri: `https://liff.line.me/${process.env.liffId}?code=${code}&name=${name}&userId=${userId}`
                     },
                     height: 'sm'
                   }

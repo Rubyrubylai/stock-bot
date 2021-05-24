@@ -1,9 +1,11 @@
+{{#if isUser}}
 <li>
-    <a href="/follow?code={{code}}&name={{name}}">新增或更新追蹤股票「{{name}}」</a>
+  <a href="/follow?code={{code}}&name={{name}}&isUser={{isUser}}">更新追蹤股票「{{name}}」</a>
 </li>
 <li>
   <button data-toggle="modal" data-target="#unfollowModal" id="unfollow">取消追蹤股票「{{name}}」</button>
 </li>
+
 <input type="hidden" name="code" id="code" value="{{code}}">
 <input type="hidden" name="name" id="name" value="{{name}}">
 <input type="hidden" name="userId" id="userId">
@@ -25,3 +27,8 @@
     </div>
   </div>
 </div>
+{{else}}
+<li>
+  <a href="/follow?code={{code}}&name={{name}}&isUser={{isUser}}">新增追蹤股票「{{name}}」</a>
+</li>
+{{/if}}

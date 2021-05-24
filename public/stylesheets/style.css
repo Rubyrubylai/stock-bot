@@ -10,8 +10,13 @@ h5 {
   margin-bottom: 10px;
 }
 
+.alert {
+  color: red;
+  position: relative;
+  left: 8%;
+}
+
 .btn {
-  margin-top: 20px;
   position: absolute;
   left: 30%;
 }
