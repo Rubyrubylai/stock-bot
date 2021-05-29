@@ -2,4 +2,4 @@
 .env
 package-lock.json
 ngrok.exe
-./public/config.js
+/public/config.js
