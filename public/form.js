@@ -1,3 +1,7 @@
+let div = document.createElement('div')
+div.innerHTML = '請至少填寫一個欄位且欄位皆須為數字!'
+div.id = 'alert'
+
 function follow(obj) {
   const openPrice = $('#openPrice').val()
   const dividendYield = $('#dividendYield').val()
@@ -5,7 +9,8 @@ function follow(obj) {
   const name = $('#name').val()
   const userId = $('#userId').val()
   if (!openPrice && !dividendYield) {
-    $('.alert').text('請至少填寫一個欄位!')
+    $('#alert').remove()
+    $('#userId').after(div)
   }
   else {
     $.ajax({
@@ -51,7 +56,8 @@ function update(obj) {
   const name = $('#name').val()
   const userId = $('#userId').val()
   if (!openPrice && !dividendYield) {
-    $('.alert').text('請至少填寫一個欄位!')
+    $('#alert').remove()
+    $('#userId').after(div)
   }
   else {
     $.ajax({
