@@ -8,16 +8,16 @@ const { taiwanStockRequest, goodInfoRequest } = require('../config/axios')
 module.exports = {
   createTechnical: async (req, res) =>　{
     try {
-      await Technical.destroy({
-        where: {},
-        truncate: true
-      })
-  
       const now = moment().format('YYYYMMDD')
       //股價
       let response = await taiwanStockRequest.get(`/exchangeReport/MI_INDEX?response=html&date=${now}&type=ALLBUT0999`)
       let $ = cheerio.load(response.data)
       let table = $('table:nth-child(11) tbody tr')
+      if (table.length === 0) { return res.send('今日休市') }
+      await Technical.destroy({
+        where: {},
+        truncate: true
+      })
       for (let i=0; i<table.length; i++) {
         const table_td = table.eq(i).find('td')
         const code = table_td.eq(0).text()
@@ -50,6 +50,7 @@ module.exports = {
       response = await taiwanStockRequest.get(`/exchangeReport/BWIBBU_d?response=html&date=${now}&selectType=ALL`)
       $ = cheerio.load(response.data)
       table = $('table tbody tr')
+      if (table.length === 0) { return res.send('今日休市') }
       for (let i=0; i<table.length; i++) {
         const table_td = table.eq(i).find('td')
         const code = table_td.eq(0).text()
@@ -68,16 +69,16 @@ module.exports = {
 
   createInvestor: async (req, res) =>　{
     try {
-      Investor.destroy({
-        where: {},
-        truncate: true
-      })
-  
       const now = moment().format('YYYYMMDD')
       //三大法人
       let response = await taiwanStockRequest.get(`/fund/T86?response=html&date=${now}&selectType=ALLBUT0999`)
       let $ = cheerio.load(response.data)
       let table = $('table tbody tr')
+      if (table.length === 0) { return res.send('今日休市') }
+      Investor.destroy({
+        where: {},
+        truncate: true
+      })
       for (let i=0; i<table.length; i++) {
         const table_td = table.eq(i).find('td')
         const code = table_td.eq(0).text()
@@ -108,16 +109,16 @@ module.exports = {
 
   createSecurity: async (req, res) =>　{
     try {
+      const now = moment().format('YYYYMMDD')
+      //融資、融券
+      let response = await taiwanStockRequest.get(`/exchangeReport/MI_MARGN?response=html&date=${now}&selectType=STOCK`)
+      let $ = cheerio.load(response.data)
+      let table = $('table tbody tr')
+      if (table.length === 0) { return res.send('今日休市') }
       Security.destroy({
         where: {},
         truncate: true
       })
-  
-      const now = moment('2021-05-19').format('YYYYMMDD')
-      //融資、融券
-      let response = await taiwanStockRequest.get(`/exchangeReport/MI_MARGN?response=html&date=20210517&selectType=STOCK`)
-      let $ = cheerio.load(response.data)
-      let table = $('table tbody tr')
       for (let i=1; i<table.length; i++) {
         const table_td = table.eq(i).find('td')
         const code = table_td.eq(0).text()
@@ -140,6 +141,7 @@ module.exports = {
       response = await taiwanStockRequest.get(`/exchangeReport/TWT93U?response=html&date=${now}`)
       $ = cheerio.load(response.data)
       table = $('table tbody tr')
+      if (table.length === 0) { return res.send('今日休市') }
       for (let i=0; i<table.length-1; i++) {
         const table_td = table.eq(i).find('td')
         const code = table_td.eq(0).text()
@@ -167,6 +169,7 @@ module.exports = {
       response = await taiwanStockRequest.get(`/exchangeReport/TWTB4U?response=html&date=${now}&selectType=All`)
       $ = cheerio.load(response.data)
       table = $('table:nth-child(3) tbody tr')
+      if (table.length === 0) { return res.send('今日休市') }
       for (let i=0; i<table.length; i++) {
         const table_td = table.eq(i).find('td')
         const code = table_td.eq(0).text()
