@@ -15,9 +15,9 @@ import config from './config.js'
       }
     })
 
-    if (!result.data.data[0]) {
+    if (Object.keys(result.data.data).length === 0) {
       let listTable = document.getElementById('listTable')
-      listTable.innerHTML = `<p>您目前沒有追蹤任何股票，請點選左下角選單開始追蹤</p>`
+      listTable.innerHTML = `<p>您目前沒有追蹤任何股票，請點選左下角的選單開始追蹤</p>`
     }
     else {
       let listBody = document.getElementById('listBody')
