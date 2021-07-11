@@ -1,22 +1,26 @@
 const express = require('express')
 const router = express.Router()
-const botService = require('../services/botService')
-const linebotParser = botService.replyMessage()
-const stockService = require('../services/stockService')
-const formService = require('../services/formService')
+const botController = require('../controller/botController')
+const linebotParser = botController.replyMessage()
+const stockController = require('../controller/stockController')
+const formController = require('../controller/formController')
 
-router.get('/technical', stockService.createTechnical)
-router.get('/investor', stockService.createInvestor)
-router.get('/security', stockService.createSecurity)
+router.get('/technical', stockController.createTechnical)
+router.get('/investor', stockController.createInvestor)
+router.get('/security', stockController.createSecurity)
 
-router.get('/form', formService.getForm)
-router.get('/follow', formService.getFollow)
-router.post('/follow', formService.createFollow)
-router.put('/follow', formService.updateFollow)
-router.delete('/follow', formService.removeFollow)
+router.get('/form', formController.getForm)
+router.post('/follow', formController.createFollow)
+router.put('/follow', formController.updateFollow)
+router.delete('/follow', formController.removeFollow)
+
+router.get('/list', formController.getList)
+router.get('/directToList', formController.directToList)
+
+router.get('/code', formController.getCode)
 
 router.post('/', linebotParser)
-router.get('/push', botService.pushMessage)
+router.get('/push', botController.pushMessage)
 
 module.exports = router
 

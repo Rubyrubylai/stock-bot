@@ -1,0 +1,45 @@
+<table>
+    <thead>
+        <tr>
+            <th>股票代碼</th>
+            <th>股票名稱</th>
+            <th>收盤價格</th>
+            <th>殖利率</th>
+        </tr>
+    </thead>
+    <tbody id="tbody">
+        {{#each followingStocks}}
+        <tr>
+            <td>{{this.code}}</td>
+            <td>{{this.Technical.name}}</td>
+            <td>{{this.openPrice}}</td>
+            <td>{{this.dividendYield}}</td>
+            <td><button data-toggle="modal" data-target="#unfollowModal-{{this.code}}" class="list-btn">刪除</button></td>
+            <td><a href="/follow?code={{this.code}}&name={{this.Technical.name}}&userId={{userId}}&hasCode=true">更新</a></td>
+        </tr>
+
+        <div class="modal fade" id="unfollowModal-{{this.code}}" tabindex="-1">
+          <div class="modal-dialog">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h5 class="modal-title">取消追蹤股票</h5>
+                <button type="button" class="btn-close" data-dismiss="modal" aria-label="Close"></button>
+              </div>
+              <div class="modal-body">
+                請問您確定要取消追蹤股票「{{this.Technical.name}}」嗎?
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-outline-dark cancel-btn" data-dismiss="modal">取消</button>
+                <input type="hidden" name="code" id="code" value="{{this.code}}">
+                <input type="hidden" name="name" id="name" value="{{this.Technical.name}}">
+                <input type="hidden" name="userId" id="userId" value="{{userId}}">
+                <button onclick="unfollow(this)" class="btn btn-dark confirm-btn">確定</button>
+              </div>
+            </div>
+          </div>
+        </div>
+        {{/each}}
+    </tbody>
+</table>
+
+<script type="module" src="/listLiff.js"></script>

@@ -1,38 +1,41 @@
+const { Op } = require('sequelize')
 const db = require('../models')
-const { User } = db
+const { User, Technical } = db
 
 module.exports = {
   getForm: async (req, res) => {
     try {
       let { code, name, userId } = req.query
       let user
-      if (userId) {
+      if (userId && code) {
         user = await User.findOne({
           where: {
-            userId, code
+            userId,
+            code
           }
         })
       }
-      const isUser = user ? true : false
-      return res.render('form', { code, name, isUser })
+      let hasCode = false
+      let openPrice
+      let dividendYield
+      if (user) {
+        user = user.toJSON()
+        hasCode = true
+        openPrice = user.openPrice
+        dividendYield = user.dividendYield
+      }
+ 
+      return res.render('form', { code, name, userId, openPrice, dividendYield, hasCode })
     }
     catch (err) {
       console.error(err)
     }
   },
-  getFollow: async (req, res) => {
-    try {
-      let { code, name, isUser } = req.query
-      isUser = isUser === 'true' ? true : false
-      return res.render('follow', { code, name, isUser })
-    }
-    catch (err) {
-      console.error(err)
-    }
-  },
+
   createFollow: async (req, res) => {
     try {
       const { openPrice, dividendYield, code, userId } = req.body
+
       if (openPrice && dividendYield) {
         await User.create({
           openPrice, dividendYield, code, userId
@@ -54,6 +57,7 @@ module.exports = {
       console.error(err)
     }
   },
+
   updateFollow: async (req, res) => {
     try {
       const { openPrice, dividendYield, code, userId } = req.body
@@ -83,18 +87,84 @@ module.exports = {
       console.error(err)
     }
   },
+
   removeFollow: async (req, res) => {
     try {
       const { code, userId } = req.body
+
       let user = await User.findOne({
         where: {
           userId, code
         }
       })
+
       if (user) {
         await user.destroy()
       }
       return res.send('成功')
+    }
+    catch (err) {
+      console.error(err)
+    }
+  },
+
+  directToList: async(req, res) => {
+    try {
+      return res.render('list')
+    }
+    catch (err) {
+      console.error(err)
+    }
+  },
+
+  getList: async(req, res) => {
+    try {
+      let { userId } = req.query
+
+      let followingStocks
+      if (userId) {
+        followingStocks = await User.findAll({
+          where: {
+            userId
+          },
+          include: [{ model: Technical, attributes: ['name'] }],
+          raw: true,
+          nest: true
+        })  
+      }
+
+      return res.json({
+        code: 200,
+        data: { followingStocks, userId }
+      })
+    }
+    catch (err) {
+      console.error(err)
+    }
+  },
+
+  getCode: async(req, res) => {
+    try {
+      const { code } = req.query
+      let codeName = await Technical.findAll({
+        where: {
+          [Op.or]: [
+            { code: code },
+            { name: {
+              [Op.like]: `%${code}%`
+            } }
+          ]
+          
+        },
+        attributes: [ 'name', 'code' ],
+        raw: true,
+        nest: true
+      })
+
+      return res.json({
+        code: 200, 
+        data: codeName
+      })
     }
     catch (err) {
       console.error(err)

@@ -1,18 +1,32 @@
 let div = document.createElement('div')
-div.innerHTML = '請至少填寫一個欄位且欄位皆須為數字!'
 div.id = 'alert'
 
-function follow(obj) {
+async function follow() {
   const openPrice = $('#openPrice').val()
   const dividendYield = $('#dividendYield').val()
-  const code = $('#code').val()
-  const name = $('#name').val()
+  let codeName = $('#code').val()
   const userId = $('#userId').val()
+  const options = document.getElementsByClassName('code-option')
+  let codeArray = []
+  for (let i=0; i<options.length; i++) {
+    codeArray.push(options[i].value)
+  }
+  
   if (!openPrice && !dividendYield) {
     $('#alert').remove()
+    div.innerHTML = '請至少填寫一個欄位!'
+    $('#userId').after(div)
+  }
+  else if (codeArray.indexOf(codeName) === -1) {
+    $('#alert').remove()
+    div.innerHTML = '請選取下拉選單中的股票!'
     $('#userId').after(div)
   }
   else {
+    codeName = codeName.split(' ')
+    const code = codeName[0]
+    const name = codeName[1] || code
+   
     $.ajax({
       method: 'POST',
       url: '/follow',
@@ -30,9 +44,10 @@ function follow(obj) {
 }
 
 function unfollow(obj) {
-  const code = $('#code').val()
-  const name = $('#name').val()
-  const userId = $('#userId').val()
+  const code = $(obj).siblings('#code').val() 
+  const name = $(obj).siblings('#name').val() 
+  const userId = $(obj).siblings('#userId').val() 
+
   $.ajax({
     method: 'DELETE',
     url: '/follow',
@@ -49,17 +64,26 @@ function unfollow(obj) {
   })
 }
 
-function update(obj) {
+function update() {
   const openPrice = $('#openPrice').val()
   const dividendYield = $('#dividendYield').val()
-  const code = $('#code').val()
-  const name = $('#name').val()
+  const codeName = $('#code').val()
   const userId = $('#userId').val()
+  const options = document.getElementsByClassName('code-option')
+  let codeArray = []
+  for (let i=0; i<options.length; i++) {
+    codeArray.push(options[i].value)
+  }
+
   if (!openPrice && !dividendYield) {
     $('#alert').remove()
     $('#userId').after(div)
   }
   else {
+    codeName = codeName.split(' ')
+    const code = codeName[0]
+    const name = codeName[1] || code
+
     $.ajax({
       method: 'PUT',
       url: '/follow',

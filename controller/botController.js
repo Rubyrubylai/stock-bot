@@ -3,7 +3,7 @@ const { Op } = require('sequelize')
 const db = require('../models')
 const { Technical, Investor, Security, Basic, User } = db
 const { difference, toLocaleString } = require('../config/convert')
-const stockService = require('./stockService')
+const stockController = require('./stockController')
 if (process.env.NODE_ENV !== 'production') {
   require('dotenv').config()
 }
@@ -18,28 +18,45 @@ module.exports = {
   replyMessage: () => {   
     bot.on('message', async(event) => {
       try {
-        let result = await Technical.findAll({
-          raw: true,
-          nest: true,
+        let result = await Technical.findOne({
           where: {
             [Op.or]: [
               { name: { 
-                [Op.like]: `%${event.message.text}%` 
+                [Op.like]: `${event.message.text}` 
               } }, 
               { code: event.message.text }
             ]
           }
         })
+        
+        if (!result) {
+          result = await Technical.findAll({
+            raw: true,
+            nest: true,
+            where: {
+              [Op.or]: [
+                { name: { 
+                  [Op.like]: `%${event.message.text}%` 
+                } }, 
+                { code: event.message.text }
+              ]
+            }
+          })
+        }
+        else {
+          result = [result.toJSON()]
+        }
   
         let text
         switch (result.length) {
           case 1:
             const code = result[0].code
+            const name = result[0].name
             const userId = event.source.userId
-            const name = encodeURI(result[0].name)
+            const encodedName = encodeURI(name)
             text = {
               type: 'flex',
-              altText: '股票選單',
+              altText: `${name}-股票選單`,
               contents: {
                 type: 'bubble',
                 body: {
@@ -48,7 +65,7 @@ module.exports = {
                   contents: [
                     {
                       type: 'text',
-                      text: '選單',
+                      text: `${name}-股票選單`,
                       weight: 'bold',
                       size: 'xl',
                       margin: 'md'
@@ -106,7 +123,7 @@ module.exports = {
                       action: {
                         type: 'uri',
                         label: '追蹤',
-                        uri: `https://liff.line.me/${process.env.liffId}?code=${code}&name=${name}&userId=${userId}`
+                        uri: `https://liff.line.me/${process.env.follow_liffId}?code=${code}&name=${encodedName}&userId=${userId}`
                       },
                       height: 'sm'
                     }
@@ -207,7 +224,8 @@ module.exports = {
                   `殖利率: ${result.Technical.dividendYield ? result.Technical.dividendYield+'%' : '--'}`
                 }
                 else {
-                  let response = await stockService.createBasic(codeB)
+                  let response = await stockController.createBasic(codeB)
+                  console.log(response)
                   if (response.message) { text = response.message }
                   else {
                     result = await Technical.findOne({
@@ -246,7 +264,6 @@ module.exports = {
 
   pushMessage: async (req, res) => {
     try {
-      
       let users = await User.findAll({
         include: [ Technical ],
         raw: true,
@@ -256,7 +273,7 @@ module.exports = {
       let userMap = []
       let userTotal = new Set()
       users.forEach(user => {
-        let { userId, code, dividendYield, openPrice } = user
+        let { userId, dividendYield, openPrice } = user
         let message
         if (!userMap[userId]) {
           userMap[userId] = []

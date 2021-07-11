@@ -199,7 +199,7 @@ module.exports = {
     try {
       let response = await goodInfoRequest.get(`/StockInfo/BasicInfo.asp?STOCK_ID=${stockId}`)
       let $ = cheerio.load(response.data)
-      const table = $('table:nth-child(5) tr td:nth-child(3) table:nth-child(3) tr')
+      const table = $('table:nth-child(3) tr')
       const code = table.eq(1).find('td:nth-child(2)').text()
       if (code.length === 0) return { message: '找不到符合的條件，請重新輸入'}
       const name = table.eq(1).find('td:nth-child(4)').text()

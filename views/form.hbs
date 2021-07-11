@@ -1,36 +1,37 @@
-{{#if isUser}}
-<li>
-  <button class="list-btn">
-    <a href="/follow?code={{code}}&name={{name}}&isUser={{isUser}}">更新追蹤股票「{{name}}」</a>
-  </button>
-</li>
-<li>
-  <button data-toggle="modal" data-target="#unfollowModal" class="list-btn">取消追蹤股票「{{name}}」</button>
-</li>
-
-<input type="hidden" name="code" id="code" value="{{code}}">
-<input type="hidden" name="name" id="name" value="{{name}}">
-<input type="hidden" name="userId" id="userId">
-
-<div class="modal fade" id="unfollowModal" tabindex="-1">
-  <div class="modal-dialog">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title">取消追蹤股票</h5>
-        <button type="button" class="btn-close" data-dismiss="modal" aria-label="Close"></button>
-      </div>
-      <div class="modal-body">
-        請問您確定要取消追蹤股票「{{name}}」嗎?
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-outline-dark cancel-btn" data-dismiss="modal">取消</button>
-        <button onclick="unfollow(this)" class="btn btn-dark confirm-btn">確定</button>
-      </div>
-    </div>
-  </div>
-</div>
+{{#if hasCode}}
+<h5>您已追蹤此股票，請更新追蹤的數據</h5>
 {{else}}
-<li>
-  <a href="/follow?code={{code}}&name={{name}}&isUser={{isUser}}">新增追蹤股票「{{name}}」</a>
-</li>
+<h5>請輸入希望小幫手提醒您的價格</h5>
 {{/if}}
+{{#if code}}
+<input type="hidden" name="code" id="code" value="{{code}} {{name}}">
+{{else}}
+<div class="form-group">
+  <label for="code" class="col-sm-3">股票代號: </label>
+  <input list="nameList" name="code" id="code">
+  <datalist id="nameList">
+  </datalist>
+</div>
+{{/if}}
+<div class="form-group">
+  <label for="openPrice" class="col-sm-3">收盤價格低於: </label>
+  <input type="number" name="openPrice" id="openPrice" value="{{openPrice}}">
+</div>
+<div class="form-group">
+  <label for="dividendYield" class="col-sm-3">殖利率高於: </label>
+  <input type="number" name="dividendYield" id="dividendYield" value="{{dividendYield}}">
+</div>
+
+<input type="hidden" name="userId" id="userId">
+{{#if hasCode}}
+<button onclick="update(this)" class="btn btn-outline-dark">提交</button>
+{{else}}
+<button onclick="follow(this)" class="btn btn-outline-dark">提交</button>
+{{/if}}
+
+{{#if code}}
+{{else}}
+<script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+<script type="module" src="/getCode.js"></script>
+{{/if}}
+<script type="module" src="/followLiff.js"></script>
