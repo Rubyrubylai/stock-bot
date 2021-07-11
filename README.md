@@ -2,10 +2,10 @@
 透過 line 獲取股票資訊，並具有追蹤功能，當股票的收盤價或殖利率到達指定的追蹤價格，機器人便會提醒
 
 + 查詢股票資訊
-![image](https://github.com/Rubyrubylai/stock-bot/blob/master/liff.jpg)
+<img src="https://github.com/Rubyrubylai/stock-bot/blob/master/liff.jpg" width="50%"/>
 
 + 股票追蹤選單
-![image](https://github.com/Rubyrubylai/stock-bot/blob/master/message.jpg)
+<img src="https://github.com/Rubyrubylai/stock-bot/blob/master/message.jpg" width="50%"/>
 
 ## 環境
 + Node.js v10.15.0
