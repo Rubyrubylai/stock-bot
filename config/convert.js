@@ -1,3 +1,5 @@
+const moment = require('moment')
+
 module.exports = {
     stringToNumber: (string) => {
         string = string.replace(/,/g, '')
@@ -12,5 +14,8 @@ module.exports = {
     },
     toLocaleString: (number) => {
         return number ? number.toLocaleString() : (number === 0 ? 0 : '--')
+    },
+    dateFormat: (date) => {
+        return moment(date).format('YYYY-MM-DD')
     }
 }

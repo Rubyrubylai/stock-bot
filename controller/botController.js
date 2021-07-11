@@ -2,7 +2,7 @@ const linebot = require('linebot')
 const { Op } = require('sequelize')
 const db = require('../models')
 const { Technical, Investor, Security, Basic, User } = db
-const { difference, toLocaleString } = require('../config/convert')
+const { difference, toLocaleString, dateFormat } = require('../config/convert')
 const stockController = require('./stockController')
 if (process.env.NODE_ENV !== 'production') {
   require('dotenv').config()
@@ -149,8 +149,10 @@ module.exports = {
                 })
                 if (!result) { text = '找不到符合的條件，請重新輸入' }
                 else {
+                  const date = dateFormat(result.createdAt)
                   const percentageChange = result.difference ? `${Math.round((result.difference/(result.openPrice + result.difference))*100)/100}%` : (result.difference === 0 ? '0.00%' : '--')
                   text = 
+                  `${date}` + '\n' +
                   `${result.code} ${result.name}` + '\n' +
                   `成交筆數: ${toLocaleString(result.transactionNumber)}` + '\n' +
                   `開盤價: ${toLocaleString(result.openPrice)}` + '\n' +
@@ -171,7 +173,9 @@ module.exports = {
                   const foreignDifferenceNumber = difference(result.foreignBuyNumber - result.foreignSellNumber)
                   const investmentDifferenceNumber = difference(result.investmentBuyNumber - result.investmentSellNumber)
                   const dealerDifferenceNumber = difference(result.dealerBuyNumber - result.dealerSellNumber)
+                  const date = dateFormat(result.createdAt)
                   text = 
+                  `${date}` + '\n' +
                   `${result.code} ${result.name}` + '\n' +
                   `外資買入張數: ${toLocaleString(result.foreignBuyNumber)}` + '\n' +
                   `外資賣出張數: ${toLocaleString(result.foreignSellNumber)}` + '\n' +
@@ -198,7 +202,9 @@ module.exports = {
                   const marginDifferenceNumber = difference(result.marginTodayNumber - result.marginYesterdayNumber)
                   const shortSaleDifferenceNumber = difference(result.shortSaleTodayNumber - result.shortSaleYesterdayNumber)
                   const loanDifferenceNumber = difference(result.loanTodayNumber - result.loanYesterdayNumber)
+                  const date = dateFormat(result.createdAt)
                   text = 
+                  `${date}` + '\n' +
                   `${result.code} ${result.name}` + '\n' +
                   `融資: ${marginDifferenceNumber}` + '\n' +
                   `融券: ${shortSaleDifferenceNumber}` + '\n' +
