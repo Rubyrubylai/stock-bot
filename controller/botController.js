@@ -225,7 +225,6 @@ module.exports = {
                 }
                 else {
                   let response = await stockController.createBasic(codeB)
-                  console.log(response)
                   if (response.message) { text = response.message }
                   else {
                     result = await Technical.findOne({
