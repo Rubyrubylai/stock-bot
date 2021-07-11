@@ -1,5 +1,5 @@
 # 積股成多 - 股票機器人
-透過 line 獲取股票資訊，並具有追蹤功能，當股票的收盤價或殖利率到達指定的追蹤價格，機器人便會提醒
+透過 line 獲取股票資訊，並具有追蹤功能，當股票的收盤價或殖利率到達指定的追蹤價格，機器人便會提醒使用者。
 
 + 查詢股票資訊
 <img src="https://github.com/Rubyrubylai/stock-bot/blob/master/liff.jpg" width="50%"/>
