@@ -67,7 +67,7 @@ function unfollow(obj) {
 function update() {
   const openPrice = $('#openPrice').val()
   const dividendYield = $('#dividendYield').val()
-  const codeName = $('#code').val()
+  let codeName = $('#code').val()
   const userId = $('#userId').val()
   const options = document.getElementsByClassName('code-option')
   let codeArray = []
