@@ -72,6 +72,8 @@ module.exports = {
       const now = moment().format('YYYYMMDD')
       //三大法人
       let response = await taiwanStockRequest.get(`/fund/T86?response=html&date=${now}&selectType=ALLBUT0999`)
+      console.log('------investor')
+      console.log(response)
       let $ = cheerio.load(response.data)
       let table = $('table tbody tr')
       if (table.length === 0) { return res.send('今日休市') }
