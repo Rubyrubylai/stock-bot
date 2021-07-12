@@ -60,7 +60,7 @@ module.exports = {
           { where: { code: code } }
         )
       }
-      return res.send('成功')
+      return res.status(200).send('成功')
     }
     catch (err) {
       console.error(err)
@@ -72,8 +72,6 @@ module.exports = {
       const now = moment().format('YYYYMMDD')
       //三大法人
       let response = await taiwanStockRequest.get(`/fund/T86?response=html&date=${now}&selectType=ALLBUT0999`)
-      console.log('------investor')
-      console.log(response)
       let $ = cheerio.load(response.data)
       let table = $('table tbody tr')
       if (table.length === 0) { return res.send('今日休市') }
@@ -102,7 +100,7 @@ module.exports = {
           dealerSellNumber: stringToNumberDivide(dealerSellNumber),
         })
       }
-      return res.send('成功')
+      return res.status(200).send('成功')
     }
     catch (err) {
       console.error(err)
@@ -189,8 +187,7 @@ module.exports = {
           })
         }
       }
-  
-      return res.send('成功')
+      return res.status(200).send('成功')
     }
     catch (err) {
       console.error(err)
