@@ -10,7 +10,7 @@ module.exports = {
         return Math.round(Number(string)/1000)
     },
     difference: (diff) => {
-        return diff > 0 ?`+${diff}`.toLocaleString() : diff.toLocaleString()
+        return diff ? diff > 0 ?`+${diff}`.toLocaleString() : diff.toLocaleString(): (diff === 0 ? 0 : '--')
     },
     toLocaleString: (number) => {
         return number ? number.toLocaleString() : (number === 0 ? 0 : '--')

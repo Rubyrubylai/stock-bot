@@ -56,7 +56,7 @@ module.exports = {
         const code = table_td.eq(0).text()
         const dividendYield = table_td.eq(2).text()
         await Technical.update(
-          { dividendYield: Number(dividendYield) ?  Number(dividendYield) : null },
+          { dividendYield: Number(dividendYield) },
           { where: { code: code } }
         )
       }
