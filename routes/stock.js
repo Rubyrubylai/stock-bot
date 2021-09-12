@@ -8,6 +8,8 @@ const formController = require('../controller/formController')
 router.get('/technical', stockController.createTechnical)
 router.get('/investor', stockController.createInvestor)
 router.get('/security', stockController.createSecurity)
+router.get('/stockTree', stockController.createStockTree)
+router.get('/stockTree/find', stockController.findStockTree)
 
 router.get('/form', formController.getForm)
 router.post('/follow', formController.createFollow)

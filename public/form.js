@@ -6,22 +6,22 @@ async function follow() {
   const dividendYield = $('#dividendYield').val()
   let codeName = $('#code').val()
   const userId = $('#userId').val()
-  const options = document.getElementsByClassName('code-option')
-  let codeArray = []
-  for (let i=0; i<options.length; i++) {
-    codeArray.push(options[i].value)
-  }
+  // const options = document.getElementsByClassName('code-option')
+  // let codeArray = []
+  // for (let i=0; i<options.length; i++) {
+  //   codeArray.push(options[i].value)
+  // }
   
   if (!openPrice && !dividendYield) {
     $('#alert').remove()
     div.innerHTML = '請至少填寫一個欄位!'
     $('#userId').after(div)
   }
-  else if (codeArray.indexOf(codeName) === -1) {
-    $('#alert').remove()
-    div.innerHTML = '請選取下拉選單中的股票!'
-    $('#userId').after(div)
-  }
+  // else if (codeArray.indexOf(codeName) === -1) {
+  //   $('#alert').remove()
+  //   div.innerHTML = '請選取下拉選單中的股票!'
+  //   $('#userId').after(div)
+  // }
   else {
     codeName = codeName.split(' ')
     const code = codeName[0]

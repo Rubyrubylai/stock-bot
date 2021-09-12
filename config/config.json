@@ -4,7 +4,8 @@
     "password": "password",
     "database": "stock_bot",
     "host": "127.0.0.1",
-    "dialect": "mysql"
+    "dialect": "mysql",
+    "domain": "http://localhost:3000"
   },
   "test": {
     "username": "root",
@@ -14,6 +15,7 @@
     "dialect": "mysql"
   },
   "production": {
-    "use_env_variable": "CLEARDB_DATABASE_URL"
+    "use_env_variable": "CLEARDB_DATABASE_URL",
+    "domain": "https://lit-bastion-68018.herokuapp.com"
   }
 }

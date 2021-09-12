@@ -4,6 +4,38 @@ const db = require('../models')
 const { Technical, Investor, Security, Basic } = db
 const { stringToNumber, stringToNumberDivide } = require('../config/convert')
 const { taiwanStockRequest, goodInfoRequest } = require('../config/axios')
+class stockTreeNode {
+  constructor() {
+    this.children = {}
+    this.code = 0
+  }
+}
+class stockTree {
+  constructor() {
+    this.root = new stockTreeNode()
+  }
+
+  insert(word, code) {
+    let current = this.root
+    for (let w of word) {
+      if (!current.children[w]) {
+        current.children[w] = new stockTreeNode()
+      }
+      current = current.children[w]
+    }
+    current.code = code
+  }
+
+  startsWith(prefix) {
+    let current = this.root
+    for (let p of prefix) {
+      if (!current.children[p]) return false
+      current = current.children[p]
+    }
+    return current
+  }
+}
+let stocksTree = new stockTree()
 
 module.exports = {
   createTechnical: async (req, res) =>　{
@@ -21,7 +53,7 @@ module.exports = {
       for (let i=0; i<table.length; i++) {
         const table_td = table.eq(i).find('td')
         const code = table_td.eq(0).text()
-        const name = table_td.eq(1).text()
+        const name = table_td.eq(1).text().trim()
         const transactionNumber= table_td.eq(3).text()
         const transactionAmount = table_td.eq(4).text()
         const openPrice = table_td.eq(5).text()
@@ -69,7 +101,7 @@ module.exports = {
 
   createInvestor: async (req, res) =>　{
     try {
-      const now = moment().format('YYYYMMDD')
+      const now = moment('2021-09-10').format('YYYYMMDD')
       //三大法人
       let response = await taiwanStockRequest.get(`/fund/T86?response=html&date=${now}&selectType=ALLBUT0999`)
       let $ = cheerio.load(response.data)
@@ -82,7 +114,7 @@ module.exports = {
       for (let i=0; i<table.length; i++) {
         const table_td = table.eq(i).find('td')
         const code = table_td.eq(0).text()
-        const name = table_td.eq(1).text()
+        const name = table_td.eq(1).text().trim()
         const foreignBuyNumber = table_td.eq(2).text()
         const foreignSellNumber = table_td.eq(3).text()
         const investmentBuyNumber = table_td.eq(8).text()
@@ -122,7 +154,7 @@ module.exports = {
       for (let i=1; i<table.length; i++) {
         const table_td = table.eq(i).find('td')
         const code = table_td.eq(0).text()
-        const name = table_td.eq(1).text()
+        const name = table_td.eq(1).text().trim()
         const marginYesterdayNumber = table_td.eq(5).text()
         const marginTodayNumber = table_td.eq(6).text()
         const shortSaleYesterdayNumber = table_td.eq(11).text()
@@ -145,7 +177,7 @@ module.exports = {
       for (let i=0; i<table.length-1; i++) {
         const table_td = table.eq(i).find('td')
         const code = table_td.eq(0).text()
-        const name = table_td.eq(1).text()
+        const name = table_td.eq(1).text().trim()
         const loanYesterdayNumber = table_td.eq(8).text()
         const loanTodayNumber = table_td.eq(12).text()
         let security = await Security.update(
@@ -173,7 +205,7 @@ module.exports = {
       for (let i=0; i<table.length; i++) {
         const table_td = table.eq(i).find('td')
         const code = table_td.eq(0).text()
-        const name = table_td.eq(1).text()
+        const name = table_td.eq(1).text().trim()
         const offsetNumber = table_td.eq(3).text()
         let security = await Security.update(
           { offsetNumber: stringToNumberDivide(offsetNumber) },
@@ -201,7 +233,7 @@ module.exports = {
       const table = $('table:nth-child(3) tr')
       const code = table.eq(1).find('td:nth-child(2)').text()
       if (code.length === 0) return { message: '找不到符合的條件，請重新輸入'}
-      const name = table.eq(1).find('td:nth-child(4)').text()
+      const name = table.eq(1).find('td:nth-child(4)').text().trim()
       const industry = table.eq(2).find('td:nth-child(2)').text()
       const listedCompany = table.eq(2).find('td:nth-child(4)').text()
       const capital = table.eq(7).find('td:nth-child(2)').text()
@@ -217,5 +249,59 @@ module.exports = {
     catch (err) {
       console.error(err)
     }
+  },
+
+  createStockTree: async(req, res) => {
+    try {
+      let stocks = await Investor.findAll({
+        attributes: ['name', 'code'],
+        raw: true,
+        nest:true
+      })
+
+      // for (let stock of stocks) {
+      //   stocksTree.insert(stock.name, stock.code)
+      // }
+
+      return res.json({
+        data: stocks
+      })
+    }
+    catch (err) {
+      console.error(err)
+    }
+  },
+
+  findStockTree: async(req, res) => {
+    try {
+      let { prefix } = req.query
+      let result = stocksTree.startsWith(prefix)
+
+      let findStockArr = [];
+      findAllWord(result, findStockArr, prefix, [])
+
+      return res.json({
+        data: findStockArr
+      })
+    }
+    catch(err) {
+      console.error(err)
+    }
+  }
+}
+
+function findAllWord(stocks, findStockArr, prefix, accumWord) {
+  if (stocks.code) {
+    let word = prefix + accumWord.join('')
+    findStockArr.push({
+      name: word,
+      code: stocks.code
+    })
+  }
+  
+  for (let child in stocks.children) {
+    accumWord.push(child)
+    findAllWord(stocks.children[child], findStockArr, prefix, accumWord)
+    accumWord.pop()
   }
 }
