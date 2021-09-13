@@ -150,7 +150,7 @@ module.exports = {
                 if (!result) { text = '找不到符合的條件，請重新輸入' }
                 else {
                   const date = dateFormat(result.createdAt)
-                  const percentageChange = result.difference ? `${Math.round((result.difference/(result.openPrice + result.difference))*100)}%` : (result.difference === 0 ? '0.00%' : '--')
+                  const percentageChange = result.difference ? `${Math.round((result.difference/(result.openPrice + result.difference))*10000)/100}%` : (result.difference === 0 ? '0.00%' : '--')
                   text = 
                   `${date}` + '\n' +
                   `${result.code} ${result.name}` + '\n' +
