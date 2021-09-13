@@ -1,77 +1,6 @@
-import config from './config.js'
-class stockTreeNode {
-  constructor() {
-    this.children = {}
-    this.code = 0
-  }
-}
-class stockTree {
-  constructor() {
-    this.root = new stockTreeNode()
-  }
-
-  insert(word, code) {
-    let current = this.root
-    for (let w of word) {
-      if (!current.children[w]) {
-        current.children[w] = new stockTreeNode()
-      }
-      current = current.children[w]
-    }
-    current.code = code
-  }
-
-  startsWith(prefix) {
-    let current = this.root
-    for (let p of prefix) {
-      if (!current.children[p]) return false
-      current = current.children[p]
-    }
-    return current
-  }
-}
-let stocksTree = new stockTree();
-
-(async function () {
-  try {
-    let stocks = await axios({
-      url: `${config.domain}/stockTree`,
-      method: 'GET'
-    })
-    stocks = stocks.data.data
-    for (let stock of stocks) {
-      stocksTree.insert(stock.name, stock.code)
-    }
-  }
-  catch(err) {
-    console.error(err)
-  }
-})();
-
-window.addEventListener('keyup', async function getCode () {
-  try {
-    const prefix = $('#code').val()
-    // let codeName = await axios({
-    //   url: `${config.domain}/stockTree/find`,
-    //   method: 'GET',
-    //   params: {
-    //     prefix: code
-    //   }
-    // })
-    let result = stocksTree.startsWith(prefix)
-    let findStockArr = [];
-    findAllWord(result, findStockArr, prefix, [])
-
-    let name= document.getElementById('nameList')
-    name.innerHTML = ''
-    findStockArr.forEach(code => {
-      name.innerHTML += `<option class="code-option" value="${code.code} ${code.name}"> `
-    })
-  }
-  catch(err) {
-    console.error(err)
-  }
-})
+import config from './config.js';
+import stockTrie from './stockTrie.js';
+let stocksTrie = new stockTrie();
 
 function findAllWord(stocks, findStockArr, prefix, accumWord) {
   if (stocks.code) {
@@ -81,10 +10,56 @@ function findAllWord(stocks, findStockArr, prefix, accumWord) {
       code: stocks.code
     })
   }
-  
+
   for (let child in stocks.children) {
     accumWord.push(child)
     findAllWord(stocks.children[child], findStockArr, prefix, accumWord)
     accumWord.pop()
   }
 }
+
+(async function () {
+  try {
+    let stocks = await axios({
+      url: `${config.domain}/listAllStocks`,
+      method: 'GET'
+    })
+    stocks = stocks.data.data
+    for (let stock of stocks) {
+      stocksTrie.insert(stock.name, stock.code)
+    }
+  }
+  catch(err) {
+    console.error(err)
+  }
+})();
+
+let stockInput = document.getElementById('code')
+stockInput.addEventListener('keyup', function getCode(e) {
+  const prefix = e.target.value
+  if (prefix.length < 1) return
+
+  let result = stocksTrie.startsWith(prefix)
+  let findStockArr = []
+  findAllWord(result, findStockArr, prefix, [])
+  let name = document.getElementById('stockList')
+  name.innerHTML = ''
+  name.style.display = 'block'
+  findStockArr.forEach(stock => {
+    name.innerHTML += `<li class="code-option list-group-item" value="${stock.code}">${stock.code} ${stock.name}</li>`
+  })
+
+  let option = document.getElementsByClassName('code-option')
+  for (var i = 0 ; i < option.length; i++) {
+    option[i].addEventListener('click', handleClick, false )
+  }
+
+  function handleClick(e) {
+    const text = e.target.innerHTML
+    stockInput.value = text
+    name.style.display = 'none'
+  }
+})
+
+
+

@@ -50,3 +50,10 @@ a:hover {
   height: 70px;
 }
 
+.code-option {
+  cursor: pointer;
+}
+
+#stockList {
+  margin-left: 20%;
+}

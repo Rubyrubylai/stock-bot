@@ -7,17 +7,17 @@
 <input type="hidden" name="code" id="code" value="{{code}} {{name}}">
 {{else}}
 <div class="form-group">
-  <label for="code" class="col-sm-3">股票代號: </label>
-  <input list="nameList" name="code" id="code">
-  <datalist id="nameList">
-  </datalist>
+  <label for="code" class="col-sm-3">股票名稱: </label>
+  <input list="stockList" name="code" id="code">
+  <ul id="stockList" class="col-sm-3">
+  </ul>
 </div>
 {{/if}}
-<div class="form-group">
+<div class="form-group back">
   <label for="openPrice" class="col-sm-3">收盤價格低於: </label>
   <input type="number" name="openPrice" id="openPrice" value="{{openPrice}}">
 </div>
-<div class="form-group">
+<div class="form-group back">
   <label for="dividendYield" class="col-sm-3">殖利率高於: </label>
   <input type="number" name="dividendYield" id="dividendYield" value="{{dividendYield}}">
 </div>

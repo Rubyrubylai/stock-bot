@@ -141,33 +141,5 @@ module.exports = {
     catch (err) {
       console.error(err)
     }
-  },
-
-  getCode: async(req, res) => {
-    try {
-      const { code } = req.query
-      let codeName = await Technical.findAll({
-        where: {
-          [Op.or]: [
-            { code: code },
-            { name: {
-              [Op.like]: `%${code}%`
-            } }
-          ]
-          
-        },
-        attributes: [ 'name', 'code' ],
-        raw: true,
-        nest: true
-      })
-
-      return res.json({
-        code: 200, 
-        data: codeName
-      })
-    }
-    catch (err) {
-      console.error(err)
-    }
   }
 }

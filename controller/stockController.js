@@ -251,17 +251,13 @@ module.exports = {
     }
   },
 
-  createStockTree: async(req, res) => {
+  listAllStocks: async(req, res) => {
     try {
       let stocks = await Investor.findAll({
         attributes: ['name', 'code'],
         raw: true,
         nest:true
       })
-
-      // for (let stock of stocks) {
-      //   stocksTree.insert(stock.name, stock.code)
-      // }
 
       return res.json({
         data: stocks
@@ -270,38 +266,5 @@ module.exports = {
     catch (err) {
       console.error(err)
     }
-  },
-
-  findStockTree: async(req, res) => {
-    try {
-      let { prefix } = req.query
-      let result = stocksTree.startsWith(prefix)
-
-      let findStockArr = [];
-      findAllWord(result, findStockArr, prefix, [])
-
-      return res.json({
-        data: findStockArr
-      })
-    }
-    catch(err) {
-      console.error(err)
-    }
-  }
-}
-
-function findAllWord(stocks, findStockArr, prefix, accumWord) {
-  if (stocks.code) {
-    let word = prefix + accumWord.join('')
-    findStockArr.push({
-      name: word,
-      code: stocks.code
-    })
-  }
-  
-  for (let child in stocks.children) {
-    accumWord.push(child)
-    findAllWord(stocks.children[child], findStockArr, prefix, accumWord)
-    accumWord.pop()
   }
 }
