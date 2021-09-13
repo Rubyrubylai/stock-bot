@@ -4,38 +4,6 @@ const db = require('../models')
 const { Technical, Investor, Security, Basic } = db
 const { stringToNumber, stringToNumberDivide } = require('../config/convert')
 const { taiwanStockRequest, goodInfoRequest } = require('../config/axios')
-class stockTreeNode {
-  constructor() {
-    this.children = {}
-    this.code = 0
-  }
-}
-class stockTree {
-  constructor() {
-    this.root = new stockTreeNode()
-  }
-
-  insert(word, code) {
-    let current = this.root
-    for (let w of word) {
-      if (!current.children[w]) {
-        current.children[w] = new stockTreeNode()
-      }
-      current = current.children[w]
-    }
-    current.code = code
-  }
-
-  startsWith(prefix) {
-    let current = this.root
-    for (let p of prefix) {
-      if (!current.children[p]) return false
-      current = current.children[p]
-    }
-    return current
-  }
-}
-let stocksTree = new stockTree()
 
 module.exports = {
   createTechnical: async (req, res) =>　{
