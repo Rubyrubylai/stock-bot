@@ -48,7 +48,6 @@ let stocksTree = new stockTree();
   }
 })();
 
-
 window.addEventListener('keyup', async function getCode () {
   try {
     const prefix = $('#code').val()
