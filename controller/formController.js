@@ -24,7 +24,7 @@ module.exports = {
         dividendYield = user.dividendYield
       }
       
-      return res.render('form', { code, name, userId, openPrice, dividendYield, hasCode, env: process.env.env })
+      return res.render('form', { code, name, userId, openPrice, dividendYield, hasCode, env: process.env.NODE_ENV })
     }
     catch (err) {
       console.error(err)
@@ -109,7 +109,7 @@ module.exports = {
 
   directToList: async(req, res) => {
     try {
-      return res.render('list', { env: process.env.env })
+      return res.render('list', { env: process.env.NODE_ENV })
     }
     catch (err) {
       console.error(err)
