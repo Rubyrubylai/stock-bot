@@ -1,4 +1,3 @@
-const { Op } = require('sequelize')
 const db = require('../models')
 const { User, Technical } = db
 
@@ -24,8 +23,8 @@ module.exports = {
         openPrice = user.openPrice
         dividendYield = user.dividendYield
       }
- 
-      return res.render('form', { code, name, userId, openPrice, dividendYield, hasCode })
+      
+      return res.render('form', { code, name, userId, openPrice, dividendYield, hasCode, env: process.env.env })
     }
     catch (err) {
       console.error(err)
@@ -110,7 +109,7 @@ module.exports = {
 
   directToList: async(req, res) => {
     try {
-      return res.render('list')
+      return res.render('list', { env: process.env.env })
     }
     catch (err) {
       console.error(err)

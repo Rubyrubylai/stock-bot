@@ -1,4 +1,5 @@
 import config from './config.js'
+let env = document.getElementById('env').value
 
 (async function () {
   try {
@@ -8,7 +9,7 @@ import config from './config.js'
     const context = liff.getContext()
 
     let result = await axios({
-      url: `${config.domain}/list`,
+      url: `${config.domain[env]}/list`,
       method: 'GET', 
       params: {
         userId: context.userId

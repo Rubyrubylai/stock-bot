@@ -1,6 +1,7 @@
 import config from './config.js';
 import stockTrie from './stockTrie.js';
 let stocksTrie = new stockTrie();
+let env = document.getElementById('env').value
 
 function findAllWord(stocks, findStockArr, prefix, accumWord) {
   if (stocks.code) {
@@ -21,7 +22,7 @@ function findAllWord(stocks, findStockArr, prefix, accumWord) {
 (async function () {
   try {
     let stocks = await axios({
-      url: `${config.domain}/listAllStocks`,
+      url: `${config.domain[env]}/listAllStocks`,
       method: 'GET'
     })
     stocks = stocks.data.data
