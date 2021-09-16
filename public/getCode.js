@@ -47,10 +47,10 @@ stockInput.addEventListener('keyup', function getCode(e) {
   name.innerHTML = ''
   name.style.display = 'block'
   findStockArr.forEach(stock => {
-    name.innerHTML += `<li class="code-option list-group-item" value="${stock.code}">${stock.code} ${stock.name}</li>`
+    name.innerHTML += `<li class="stock-option list-group-item">${stock.code} ${stock.name}</li>`
   })
 
-  let option = document.getElementsByClassName('code-option')
+  let option = document.getElementsByClassName('stock-option')
   for (var i = 0 ; i < option.length; i++) {
     option[i].addEventListener('click', handleClick, false )
   }

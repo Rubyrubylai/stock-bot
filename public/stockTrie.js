@@ -12,10 +12,10 @@ class stockTrie {
     insert(word, code) {
         let current = this.root
         for (let w of word) {
-        if (!current.children[w]) {
-            current.children[w] = new stockTrieNode()
-        }
-        current = current.children[w]
+            if (!current.children[w]) {
+                current.children[w] = new stockTrieNode()
+            }
+            current = current.children[w]
         }
         current.code = code
     }
@@ -23,8 +23,8 @@ class stockTrie {
     startsWith(prefix) {
         let current = this.root
         for (let p of prefix) {
-        if (!current.children[p]) return false
-        current = current.children[p]
+            if (!current.children[p]) return false
+            current = current.children[p]
         }
         return current
     }

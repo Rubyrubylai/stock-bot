@@ -50,10 +50,22 @@ a:hover {
   height: 70px;
 }
 
-.code-option {
+.stock-option {
   cursor: pointer;
+  margin: 0 auto;
+  z-index: 1;
 }
 
-#stockList {
+.drop-down-menu-items {
+  display: block;
+  position: absolute;
   margin-left: 20%;
+}
+
+.input-items {
+  display: block;
+}
+
+.drop-down-btn {
+  display: block;
 }

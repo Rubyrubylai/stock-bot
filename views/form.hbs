@@ -6,18 +6,18 @@
 {{#if code}}
 <input type="hidden" name="code" id="code" value="{{code}} {{name}}">
 {{else}}
-<div class="form-group">
+<div class="form-group drop-down-menu">
   <label for="code" class="col-sm-3">股票名稱: </label>
   <input list="stockList" name="code" id="code">
-  <ul id="stockList" class="col-sm-3">
+  <ul id="stockList" class="col-sm-3 drop-down-menu-items list-group">
   </ul>
 </div>
 {{/if}}
-<div class="form-group back">
+<div class="form-group input-items">
   <label for="openPrice" class="col-sm-3">收盤價格低於: </label>
   <input type="number" name="openPrice" id="openPrice" value="{{openPrice}}">
 </div>
-<div class="form-group back">
+<div class="form-group input-items">
   <label for="dividendYield" class="col-sm-3">殖利率高於: </label>
   <input type="number" name="dividendYield" id="dividendYield" value="{{dividendYield}}">
 </div>
@@ -26,7 +26,7 @@
 {{#if hasCode}}
 <button onclick="update(this)" class="btn btn-outline-dark">提交</button>
 {{else}}
-<button onclick="follow(this)" class="btn btn-outline-dark">提交</button>
+<button onclick="follow(this)" class="btn btn-outline-dark drop-down-btn">提交</button>
 {{/if}}
 
 {{#if code}}
