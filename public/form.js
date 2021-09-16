@@ -6,10 +6,17 @@ function follow() {
   const dividendYield = $('#dividendYield').val()
   let codeName = $('#code').val()
   const userId = $('#userId').val()
-  
+
+  let alertMessage = ''
+  if (userId === 'undefined') {
+    alertMessage += '請從 line 登入後才能使用此功能! '
+  }
   if (!openPrice && !dividendYield) {
+    alertMessage += '請至少填寫一個欄位!'
+  }
+  if (alertMessage) {
     $('#alert').remove()
-    div.innerHTML = '請至少填寫一個欄位!'
+    div.innerHTML = alertMessage
     $('#userId').after(div)
   }
   else {
