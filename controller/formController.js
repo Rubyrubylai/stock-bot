@@ -107,7 +107,7 @@ module.exports = {
     }
   },
 
-  directToList: async(req, res) => {
+  getList: async(req, res) => {
     try {
       return res.render('list', { env: process.env.NODE_ENV })
     }
@@ -116,7 +116,7 @@ module.exports = {
     }
   },
 
-  getList: async(req, res) => {
+  getListStocks: async(req, res) => {
     try {
       let { userId } = req.query
 

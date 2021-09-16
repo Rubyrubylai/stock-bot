@@ -1,7 +1,7 @@
 import config from './config.js';
 import stockTrie from './stockTrie.js';
 let stocksTrie = new stockTrie();
-let env = document.getElementById('env').value
+let env = document.getElementById('env').value;
 
 function findAllWord(stocks, findStockArr, prefix, accumWord) {
   if (stocks.code) {

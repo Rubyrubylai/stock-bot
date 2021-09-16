@@ -15,8 +15,8 @@ router.post('/follow', formController.createFollow)
 router.put('/follow', formController.updateFollow)
 router.delete('/follow', formController.removeFollow)
 
+router.get('/listStocks', formController.getListStocks)
 router.get('/list', formController.getList)
-router.get('/directToList', formController.directToList)
 
 router.post('/', linebotParser)
 router.get('/push', botController.pushMessage)
